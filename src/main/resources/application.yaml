@@ -20,9 +20,11 @@ app:
       model: ${VOYAGE_MODEL:voyage-3-large}
       output-dimension: ${VOYAGE_OUTPUT_DIMENSION:2048}
 
+server:
+  port: ${PORT:8080}
+
 logging:
   level:
     br.com.ricas.movie: INFO
     org.springframework.data:
       mongodb: DEBUG
-
