@@ -2,11 +2,11 @@ spring:
   application:
     name: ricas-flix
   mongodb:
-    database: ${MONGODB_DATABASE:sample_mflix}
-    uri: ${MONGODB_URI:mongodb://localhost:27017/ricas-flix}
+    database: ${MONGODB_DATABASE:ricas_flix}
+    uri: ${MONGODB_URI:mongodb://localhost:27017/ricas_flix
 app:
   movie-search:
-    collection: ${MOVIE_COLLECTION:embedded_movies}
+    collection: ${MOVIE_COLLECTION:movies}
     vector-index: ${MOVIE_VECTOR_INDEX:vector_index}
     text-index: ${MOVIE_TEXT_INDEX:default}
     embedding-path: ${MOVIE_EMBEDDING_PATH:plot_embedding_voyage_3_large}
