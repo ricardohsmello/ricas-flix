@@ -12,5 +12,4 @@ public record MovieSearchResult(
 		List<String> cast,
 		String poster,
 		Double score
-) {
-}
+) {}
