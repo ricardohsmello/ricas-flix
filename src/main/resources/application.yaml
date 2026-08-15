@@ -3,7 +3,7 @@ spring:
     name: ricas-flix
   mongodb:
     database: ${MONGODB_DATABASE:ricas_flix}
-    uri: ${MONGODB_URI:mongodb://localhost:27017/ricas_flix
+    uri: ${MONGODB_URI:mongodb://localhost:27017/ricas_flix}
 app:
   movie-search:
     collection: ${MOVIE_COLLECTION:movies}
