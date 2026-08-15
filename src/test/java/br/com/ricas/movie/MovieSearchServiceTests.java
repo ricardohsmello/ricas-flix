@@ -77,4 +77,22 @@ class MovieSearchServiceTests {
 				.doesNotContain("\"filter\"")
 				.doesNotContain("mustNot");
 	}
+
+	@Test
+	void buildsFilterOnlySearchWhenQueryIsBlank() {
+		MovieSearchRequest request = new MovieSearchRequest(
+				"", 1990, 1999, List.of("Drama"), 8.0, false
+		);
+
+		String json = service.buildFilterAggregation(request).toString();
+
+		assertThat(json)
+				.contains("$match")
+				.contains("\"$gte\" : 1990")
+				.contains("\"$lte\" : 1999")
+				.contains("Drama")
+				.contains("imdb.rating")
+				.doesNotContain("$vectorSearch")
+				.doesNotContain("$search");
+	}
 }

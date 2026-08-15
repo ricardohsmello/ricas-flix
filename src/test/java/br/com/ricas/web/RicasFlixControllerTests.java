@@ -30,4 +30,20 @@ class RicasFlixControllerTests {
 				.content("{\"query\":\"action\"}"))
 				.andExpect(status().isOk());
 	}
+
+	@Test
+	void acceptsRequestContainingOnlyYear() throws Exception {
+		MovieSearchService service = new MovieSearchService(null, null, null) {
+			@Override
+			public List<MovieSearchResult> searchMovies(MovieSearchRequest request) {
+				return List.of();
+			}
+		};
+		MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new RicasFlixController(service)).build();
+
+		mockMvc.perform(post("/api/movies/search")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content("{\"yearFrom\":2020,\"yearTo\":2020}"))
+				.andExpect(status().isOk());
+	}
 }

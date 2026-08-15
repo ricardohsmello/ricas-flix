@@ -49,8 +49,11 @@ public class MovieSearchService {
 				request.excludeGenres()
 		);
 
-		List<Double> queryVector = embeddingClient.embedQuery(request.query());
-		Aggregation aggregation = buildHybridAggregation(request, queryVector);
+		boolean hasQuery = !request.query().isBlank();
+		List<Double> queryVector = hasQuery ? embeddingClient.embedQuery(request.query()) : List.of();
+		Aggregation aggregation = hasQuery
+				? buildHybridAggregation(request, queryVector)
+				: buildFilterAggregation(request);
 
 		log.info("MongoDB pipeline: {}", aggregation.toString().replace(queryVector.toString(),
 				"<vector with " + queryVector.size() + " dimensions>"));
@@ -84,6 +87,17 @@ public class MovieSearchService {
 				context -> buildProjectionStage(),
 				context -> new Document("$limit", properties.limit())
 		);
+	}
+
+	Aggregation buildFilterAggregation(MovieSearchRequest request) {
+		Document filters = buildMongoFilters(request);
+		List<AggregationOperation> operations = new ArrayList<>();
+		if (!filters.isEmpty()) {
+			operations.add(context -> new Document("$match", filters));
+		}
+		operations.add(context -> buildFilterProjectionStage());
+		operations.add(context -> new Document("$limit", properties.limit()));
+		return Aggregation.newAggregation(operations);
 	}
 
 	private List<Document> buildVectorSearchPipeline(MovieSearchRequest request, List<Double> queryVector) {
@@ -129,7 +143,31 @@ public class MovieSearchService {
 						.append("score", new Document("$meta", "score")));
 	}
 
+	private Document buildFilterProjectionStage() {
+		return new Document("$project", new Document("_id", 0)
+						.append("id", new Document("$toString", "$_id"))
+						.append("title", 1)
+						.append("year", 1)
+						.append("genres", 1)
+						.append("plot", 1)
+						.append("cast", 1)
+						.append("poster", 1)
+						.append("imdbRating", "$imdb.rating"));
+	}
+
 	private Document buildVectorFilter(MovieSearchRequest request) {
+		List<Document> filters = new ArrayList<>();
+		addRangeFilter(filters, "year", request.yearFrom(), request.yearTo());
+		if (request.minIMDbRating() != null) {
+			filters.add(new Document("imdb.rating", new Document("$gte", request.minIMDbRating())));
+		}
+		if (!request.genres().isEmpty()) {
+			filters.add(new Document("genres", new Document(request.excludeGenres() ? "$nin" : "$in", request.genres())));
+		}
+		return filters.isEmpty() ? new Document() : new Document("$and", filters);
+	}
+
+	private Document buildMongoFilters(MovieSearchRequest request) {
 		List<Document> filters = new ArrayList<>();
 		addRangeFilter(filters, "year", request.yearFrom(), request.yearTo());
 		if (request.minIMDbRating() != null) {

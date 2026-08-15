@@ -9,7 +9,7 @@ import jakarta.validation.constraints.Size;
 import java.util.List;
 
 public record MovieSearchRequest(
-		@NotBlank @Size(max = 1_000) String query,
+		@Size(max = 1_000) String query,
 		@Min(1888) Integer yearFrom,
 		@Min(1888) Integer yearTo,
 		@Size(max = 20) List<@NotBlank @Size(max = 80) String> genres,
@@ -18,7 +18,7 @@ public record MovieSearchRequest(
 ) {
 
 	public MovieSearchRequest {
-		query = query == null ? null : query.strip();
+		query = query == null ? "" : query.strip();
 		genres = genres == null
 				? List.of()
 				: genres.stream().map(String::strip).filter(genre -> !genre.isEmpty()).distinct().toList();
