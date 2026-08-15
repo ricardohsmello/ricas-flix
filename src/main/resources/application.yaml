@@ -10,7 +10,7 @@ app:
     vector-index: ${MOVIE_VECTOR_INDEX:vector_index}
     text-index: ${MOVIE_TEXT_INDEX:default}
     embedding-path: ${MOVIE_EMBEDDING_PATH:plot_embedding_voyage_3_large}
-    limit: ${MOVIE_SEARCH_LIMIT:5}
+    limit: ${MOVIE_SEARCH_LIMIT:10}
     num-candidates: ${MOVIE_SEARCH_NUM_CANDIDATES:300}
     vector-weight: ${MOVIE_VECTOR_WEIGHT:0.7}
     text-weight: ${MOVIE_TEXT_WEIGHT:0.3}
